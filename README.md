@@ -16,7 +16,7 @@ NAME:
    gitlab-merger - Automate your MR creation
 
 USAGE:
-   main [global options] command [command options] [arguments...]
+   gitlab-merger [global options] command [command options] [arguments...]
 
 COMMANDS:
    merge    refs together
