@@ -1,4 +1,4 @@
-# 🔐 gitlab-merger - Automated merge request creation for GitLab projects
+# 🦊 gitlab-merger - Automated merge request creation for GitLab projects
 
 [![GoDoc](https://godoc.org/github.com/mvisonneau/gitlab-merger?status.svg)](https://godoc.org/github.com/mvisonneau/gitlab-merger)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mvisonneau/gitlab-merger)](https://goreportcard.com/report/github.com/mvisonneau/gitlab-merger)
