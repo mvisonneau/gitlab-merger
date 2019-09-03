@@ -1,0 +1,88 @@
+---
+kind: pipeline
+name: test
+
+steps:
+  - name: lint
+    image: golang:1.12
+    commands:
+      - make lint
+  - name: test
+    image: golang:1.12
+    commands:
+      - make test
+  - name: build
+    image: goreleaser/goreleaser:v0.117.1
+    commands:
+      - apk add --no-cache make
+      - make build
+  - name: all_ok
+    image: busybox
+    depends_on:
+      - lint
+      - test
+      - build
+    commands:
+      - 'true'
+
+trigger:
+  event:
+    - push
+    - pull_request
+    - tag
+
+---
+kind: pipeline
+name: coverage
+
+steps:
+  - name: coverage
+    image: golang:1.12
+    environment:
+      COVERALLS_TOKEN:
+        from_secret: COVERALLS_TOKEN
+    commands:
+      - make coverage
+      - make publish-coveralls
+
+trigger:
+  repo:
+    - mvisonneau/gitlab-merger
+  event:
+    - push
+    - tag
+
+---
+kind: pipeline
+name: release
+
+steps:
+  - name: fetch
+    image: docker:git
+    commands:
+      - git fetch --tags
+
+  - name: release
+    image: goreleaser/goreleaser:v0.117.1
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
+    commands:
+      - apk add --no-cache make
+      - make release
+
+trigger:
+  repo:
+    - mvisonneau/gitlab-merger
+  event:
+    - tag
+
+depends_on:
+  - test
+  - coverage
+
+---
+kind: signature
+hmac: c01f6d70469525b2cca3545a6d5fa3ee25da244ebcfffd51df75fe28dccec106
+
+...

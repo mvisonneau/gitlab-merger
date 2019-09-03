@@ -1,11 +1,17 @@
 package main
 
 import (
+	"log"
 	"os"
+	"time"
+
+	"github.com/mvisonneau/gitlab-merger/cli"
 )
 
-var version = "<devel>"
+var version = ""
 
 func main() {
-	runCli().Run(os.Args)
+	if err := cli.Init(&version, time.Now()).Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
