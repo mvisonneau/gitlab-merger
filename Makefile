@@ -58,7 +58,7 @@ dev-env: ## Build a local development environment using Docker
 	@docker run -it --rm \
 		-v $(shell pwd):/go/src/github.com/mvisonneau/$(NAME) \
 		-w /go/src/github.com/mvisonneau/$(NAME) \
-		golang:1.12 \
+		golang:1.13 \
 		/bin/bash -c 'make setup; make install; bash'
 
 .PHONY: sign-drone
