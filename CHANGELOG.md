@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+## [0.1.1] - 2019-10-23
+
 ### Added
 
 - Missed windows builds
