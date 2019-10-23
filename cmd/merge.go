@@ -178,13 +178,17 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 	title := fmt.Sprintf("%s Merge '%s' into '%s' 🚀", a.mrPrefix, a.sourceRef, a.targetRef)
 	description := "This is an automated MR to get review/approval from the following commiters:\n"
 
-	committerIDs := []*int{}
+	committerIDs := []int{}
 	for _, mapping := range *em {
 		gitlabUser, err := c.getGitlabUserByID(mapping.GitlabUserID)
 		if err != nil {
 			return nil, err
 		}
-		committerIDs = append(committerIDs, &gitlabUser.ID)
+
+		if !intSliceContains(committerIDs, gitlabUser.ID) {
+			committerIDs = append(committerIDs, gitlabUser.ID)
+		}
+
 		description += fmt.Sprintf("- @%s\n", gitlabUser.Username)
 	}
 
@@ -195,11 +199,17 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 		}
 	}
 
+	// Convert slice of int into slice of int pointers for the SDK call
+	assigneeIDs := []*int{}
+	for _, committerID := range committerIDs {
+		assigneeIDs = append(assigneeIDs, &committerID)
+	}
+
 	// Create the MR
 	mrOpt := &gitlab.CreateMergeRequestOptions{
 		Title:        &title,
 		Description:  &description,
-		AssigneeIDs:  committerIDs,
+		AssigneeIDs:  assigneeIDs,
 		SourceBranch: &a.sourceRef,
 		TargetBranch: &a.targetRef,
 	}
@@ -222,7 +232,7 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 
 	// Update the approvers list
 	cmraaOpt := &gitlab.ChangeMergeRequestAllowedApproversOptions{
-		ApproverIDs:      committerIDs,
+		ApproverIDs:      assigneeIDs,
 		ApproverGroupIDs: []*int{},
 	}
 
@@ -281,5 +291,10 @@ func (c *client) notifySlackChannel(channel string, a *mergeArgs, mr *gitlab.Mer
 
 func stringSliceContains(s []string, search string) bool {
 	i := sort.SearchStrings(s, search)
+	return i < len(s) && s[i] == search
+}
+
+func intSliceContains(s []int, search int) bool {
+	i := sort.SearchInts(s, search)
 	return i < len(s) && s[i] == search
 }

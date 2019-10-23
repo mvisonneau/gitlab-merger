@@ -14,6 +14,7 @@ and this project adheres to [0ver](https://0ver.org).
 ### Changed
 
 - Avoid duplicates on not found emails
+- Fixed a bug where users get added twice if they commit with different emails and crash the MR creation
 
 ## [0.1.0] - 2019-09-03
 
