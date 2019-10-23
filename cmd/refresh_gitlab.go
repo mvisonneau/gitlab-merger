@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/mvisonneau/go-gitlab"
 	"github.com/urfave/cli"
-	"github.com/xanzy/go-gitlab"
 )
 
 // RefreshGitlabUsers list
