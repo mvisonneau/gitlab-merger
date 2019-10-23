@@ -20,6 +20,7 @@ and this project adheres to [0ver](https://0ver.org).
 - Bumped goreleaser to `v0.120.3`
 - Bumped go to `1.13`
 - Moved back to upstream repo of go-gitlab (xanzy)
+- Fixed docker builds
 
 ## [0.1.0] - 2019-09-03
 
