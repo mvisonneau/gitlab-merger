@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+## [0.1.2] - 2019-10-23
+
 ### Changed
 
 - Re-used fork for xanzy/go-gitlab to fix an issue on the allowed approvers update
