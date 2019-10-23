@@ -11,6 +11,10 @@ and this project adheres to [0ver](https://0ver.org).
 
 - Missed windows builds
 
+### Changed
+
+- Avoid duplicates on not found emails
+
 ## [0.1.0] - 2019-09-03
 
 ### Added

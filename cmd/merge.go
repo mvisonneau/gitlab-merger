@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/mvisonneau/go-gitlab"
 	"github.com/nlopes/slack"
@@ -82,7 +83,9 @@ func Merge(ctx *cli.Context) error {
 
 		if len(notFoundEmails) > 0 {
 			log.Infof("%d commiter email(s) could not be matched", len(notFoundEmails))
-			fmt.Println(notFoundEmails)
+			for _, email := range notFoundEmails {
+				log.Infof("--> %s", email)
+			}
 		}
 
 		mr, err := c.createMR(a, em, notFoundEmails)
@@ -132,14 +135,14 @@ func (c *client) findExistingMR(a *mergeArgs) (*gitlab.MergeRequest, error) {
 	return nil, err
 }
 
-func (c *client) getCommiters(projectID *int, cmp *gitlab.Compare) (*EmailMappings, []*string, error) {
+func (c *client) getCommiters(projectID *int, cmp *gitlab.Compare) (*EmailMappings, []string, error) {
 	knownMappings, err := c.getEmailMappings()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	em := &EmailMappings{}
-	notFoundEmails := []*string{}
+	notFoundEmails := []string{}
 
 	for _, commit := range cmp.Commits {
 		// Check if we haven't already found it
@@ -154,7 +157,9 @@ func (c *client) getCommiters(projectID *int, cmp *gitlab.Compare) (*EmailMappin
 			continue
 		}
 
-		notFoundEmails = append(notFoundEmails, &commit.CommitterEmail)
+		if !stringSliceContains(notFoundEmails, commit.CommitterEmail) {
+			notFoundEmails = append(notFoundEmails, commit.CommitterEmail)
+		}
 	}
 
 	return em, notFoundEmails, nil
@@ -169,7 +174,7 @@ func (c *client) getProjectIDByName(project string) (int, error) {
 	return p.ID, nil
 }
 
-func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []*string) (*gitlab.MergeRequest, error) {
+func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []string) (*gitlab.MergeRequest, error) {
 	title := fmt.Sprintf("%s Merge '%s' into '%s' 🚀", a.mrPrefix, a.sourceRef, a.targetRef)
 	description := "This is an automated MR to get review/approval from the following commiters:\n"
 
@@ -186,7 +191,7 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []*str
 	if len(notFoundEmails) > 0 {
 		description += "\n\nFollowing commiters could not be found in GitLab, you need to ping them manually:\n"
 		for _, email := range notFoundEmails {
-			description += fmt.Sprintf("- %s", *email)
+			description += fmt.Sprintf("- %s", email)
 		}
 	}
 
@@ -272,4 +277,9 @@ func (c *client) notifySlackChannel(channel string, a *mergeArgs, mr *gitlab.Mer
 	)
 
 	return err
+}
+
+func stringSliceContains(s []string, search string) bool {
+	i := sort.SearchStrings(s, search)
+	return i < len(s) && s[i] == search
 }
