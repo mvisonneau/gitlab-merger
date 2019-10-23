@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/mvisonneau/gitlab-merger/logger"
-	"github.com/mvisonneau/go-gitlab"
+	"github.com/xanzy/go-gitlab"
 	"github.com/nlopes/slack"
 
 	log "github.com/sirupsen/logrus"

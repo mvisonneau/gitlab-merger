@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mvisonneau/go-gitlab"
+	"github.com/xanzy/go-gitlab"
 	"github.com/urfave/cli"
 )
 

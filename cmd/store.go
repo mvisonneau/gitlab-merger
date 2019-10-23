@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/mvisonneau/go-gitlab"
+	"github.com/xanzy/go-gitlab"
 	log "github.com/sirupsen/logrus"
 )
 

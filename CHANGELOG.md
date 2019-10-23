@@ -17,6 +17,7 @@ and this project adheres to [0ver](https://0ver.org).
 - Fixed a bug where users get added twice if they commit with different emails and crash the MR creation
 - Bumped goreleaser to `v0.120.3`
 - Bumped go to `1.13`
+- Moved back to upstream repo of go-gitlab (xanzy)
 
 ## [0.1.0] - 2019-09-03
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/mvisonneau/go-gitlab"
 	"github.com/nlopes/slack"
+	"github.com/xanzy/go-gitlab"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -199,17 +199,11 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 		}
 	}
 
-	// Convert slice of int into slice of int pointers for the SDK call
-	assigneeIDs := []*int{}
-	for _, committerID := range committerIDs {
-		assigneeIDs = append(assigneeIDs, &committerID)
-	}
-
 	// Create the MR
 	mrOpt := &gitlab.CreateMergeRequestOptions{
 		Title:        &title,
 		Description:  &description,
-		AssigneeIDs:  assigneeIDs,
+		AssigneeIDs:  committerIDs,
 		SourceBranch: &a.sourceRef,
 		TargetBranch: &a.targetRef,
 	}
@@ -225,18 +219,18 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 		ApprovalsRequired: &approvalsCount,
 	}
 
-	_, _, err = c.gitlab.MergeRequests.ChangeMergeRequestApprovalConfiguration(a.project, mr.IID, cmraOpt)
+	_, _, err = c.gitlab.MergeRequestApprovals.ChangeApprovalConfiguration(a.project, mr.IID, cmraOpt)
 	if err != nil {
 		return mr, err
 	}
 
 	// Update the approvers list
 	cmraaOpt := &gitlab.ChangeMergeRequestAllowedApproversOptions{
-		ApproverIDs:      assigneeIDs,
-		ApproverGroupIDs: []*int{},
+		ApproverIDs:      committerIDs,
+		ApproverGroupIDs: []int{},
 	}
 
-	_, _, err = c.gitlab.MergeRequests.ChangeMergeRequestAllowedApprovers(a.project, mr.IID, cmraaOpt)
+	_, _, err = c.gitlab.MergeRequestApprovals.ChangeAllowedApprovers(a.project, mr.IID, cmraaOpt)
 	if err != nil {
 		return mr, err
 	}
