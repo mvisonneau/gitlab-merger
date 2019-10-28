@@ -48,8 +48,6 @@ func RefreshSlackUsers(ctx *cli.Context) error {
 func (em *EmailMappings) setSlackUserID(email string, SlackUserID string) {
 	if _, ok := (*em)[email]; ok {
 		(*em)[email].SlackUserID = SlackUserID
-	} else {
-		(*em)[email] = &Mapping{SlackUserID: SlackUserID}
 	}
 }
 
@@ -66,7 +64,7 @@ func (em *EmailMappings) setSlackUserForAllGitlabUserEmails() {
 		}
 	}
 
-	for email := range *em {
-		(*em)[email].SlackUserID = users[(*em)[email].GitlabUserID]
+	for mapping := range *em {
+		(*em)[mapping].SlackUserID = users[(*em)[mapping].GitlabUserID]
 	}
 }

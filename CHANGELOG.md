@@ -7,6 +7,10 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+### Changed
+
+- Fixed a bug in the fetching of slack users function causing wrong assignments of SlackUserIds
+
 ## [0.1.2] - 2019-10-23
 
 ### Changed
