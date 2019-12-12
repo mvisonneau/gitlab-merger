@@ -253,7 +253,6 @@ func (c *client) notifySlackChannel(channel string, a *mergeArgs, mr *gitlab.Mer
 		Title: fmt.Sprintf("Click for MR"),
 		TitleLink: fmt.Sprintf("%s", mr.WebURL),
 		Pretext: fmt.Sprintf("🚀 merging `%s` to `%s` in *%s*", a.sourceRef, a.targetRef, a.project),
-		Footer:  fmt.Sprintf("%s/diffs", mr.WebURL),
 		Text:    "",
 	}
 
