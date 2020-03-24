@@ -10,7 +10,7 @@ require (
 	github.com/mvisonneau/go-gitlab v0.20.2-0.20191023152124-a573388965a1
 	github.com/nlopes/slack v0.6.0
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.5.0
 	github.com/urfave/cli v1.22.3
 	golang.org/x/net v0.0.0-20191021144547-ec77196f6094 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
