@@ -16,6 +16,7 @@ and this project adheres to [0ver](https://0ver.org).
 - Bumped goreleaser to 0.131.1
 - Removed some unnecessary calls to the API in the merge function context
 - Enhanced docker build times
+- Switched the slack library from nlopes to slack-go (moved)
 
 ## [0.1.2] - 2019-10-23
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/mvisonneau/go-helpers/logger"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/xanzy/go-gitlab"
 
 	log "github.com/sirupsen/logrus"

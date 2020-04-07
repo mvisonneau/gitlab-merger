@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/xanzy/go-gitlab"
 
 	log "github.com/sirupsen/logrus"
@@ -244,10 +244,10 @@ func (c *client) getMergeRequestCommits(mr *gitlab.MergeRequest) (commits []*git
 
 func (c *client) notifySlackChannel(channel string, a *mergeArgs, mr *gitlab.MergeRequest, em *EmailMappings) (err error) {
 	attachment := slack.Attachment{
-		Title: fmt.Sprintf("Click for MR"),
+		Title:     fmt.Sprintf("Click for MR"),
 		TitleLink: fmt.Sprintf("%s", mr.WebURL),
-		Pretext: fmt.Sprintf("🚀 merging `%s` to `%s` in *%s*", a.sourceRef, a.targetRef, a.project),
-		Text: "",
+		Pretext:   fmt.Sprintf("🚀 merging `%s` to `%s` in *%s*", a.sourceRef, a.targetRef, a.project),
+		Text:      "",
 	}
 
 	commits, err := c.getMergeRequestCommits(mr)
