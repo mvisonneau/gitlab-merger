@@ -2,18 +2,18 @@
 # BUILD CONTAINER
 ##
 
-FROM goreleaser/goreleaser:v0.129.0 as builder
+FROM goreleaser/goreleaser:v0.131.1 as builder
 
 WORKDIR /build
 
 COPY Makefile .
 RUN \
-apk add --no-cache make ;\
-make setup
+  apk add --no-cache make ;\
+  make setup
 
 COPY . .
 RUN \
-make build
+  make build
 
 ##
 # RELEASE CONTAINER

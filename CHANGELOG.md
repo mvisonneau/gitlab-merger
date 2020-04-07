@@ -27,7 +27,7 @@ and this project adheres to [0ver](https://0ver.org).
 
 - Avoid duplicates on not found emails
 - Fixed a bug where users get added twice if they commit with different emails and crash the MR creation
-- Bumped goreleaser to `v0.120.3`
+- Bumped goreleaser to `v0.131.1`
 - Bumped go to `1.13`
 - Moved back to upstream repo of go-gitlab (xanzy)
 - Fixed docker builds
