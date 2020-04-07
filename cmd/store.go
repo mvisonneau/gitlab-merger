@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/mvisonneau/go-gitlab"
 	log "github.com/sirupsen/logrus"
+	"github.com/xanzy/go-gitlab"
 )
 
 func (c *client) getCurrentUser() (user *gitlab.User, err error) {

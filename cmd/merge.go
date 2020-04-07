@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/mvisonneau/go-gitlab"
 	"github.com/nlopes/slack"
+	"github.com/xanzy/go-gitlab"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"

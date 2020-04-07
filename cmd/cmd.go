@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/mvisonneau/gitlab-merger/logger"
-	"github.com/mvisonneau/go-gitlab"
 	"github.com/nlopes/slack"
+	"github.com/xanzy/go-gitlab"
 
 	log "github.com/sirupsen/logrus"
 
@@ -50,14 +50,24 @@ func configure(ctx *cli.Context) error {
 		return err
 	}
 
-	c = &client{
-		gitlab: gitlab.NewClient(nil, ctx.GlobalString("gitlab-token")),
+	c = &client{}
+	var err error
+	opts := []gitlab.ClientOptionFunc{
+		gitlab.WithBaseURL(ctx.GlobalString("gitlab-url")),
 	}
-	c.gitlab.SetBaseURL(ctx.GlobalString("gitlab-url"))
+
+	c.gitlab, err = gitlab.NewClient(ctx.GlobalString("gitlab-token"), opts...)
+	if err != nil {
+		return err
+	}
+
+	c = &client{}
 
 	if ctx.String("gitlab-admin-token") != "" {
-		c.gitlabAdmin = gitlab.NewClient(nil, ctx.String("gitlab-admin-token"))
-		c.gitlabAdmin.SetBaseURL(ctx.GlobalString("gitlab-url"))
+		c.gitlabAdmin, err = gitlab.NewClient(ctx.GlobalString("gitlab-admin-token"), opts...)
+		if err != nil {
+			return err
+		}
 	} else {
 		c.gitlabAdmin = c.gitlab
 	}
