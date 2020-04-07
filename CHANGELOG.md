@@ -9,6 +9,11 @@ and this project adheres to [0ver](https://0ver.org).
 
 ### Changed
 
+- Reverted the go-gitlab library to the xanzy one
+- Bumped to go 1.14
+- Use revive for lint tests
+- Bumped goreleaser to 0.131.1
+- Removed some unnecessary calls to the API in the merge function context
 - Fixed a bug in the fetching of slack users function causing wrong assignments of SlackUserIds
 
 ## [0.1.2] - 2019-10-23
