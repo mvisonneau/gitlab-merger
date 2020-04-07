@@ -19,8 +19,10 @@ type client struct {
 	slack       *slack.Client
 }
 
+// EmailMappings ...
 type EmailMappings map[string]*Mapping
 
+// Mapping ...
 type Mapping struct {
 	GitlabUserID int
 	SlackUserID  string

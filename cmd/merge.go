@@ -55,12 +55,6 @@ func Merge(ctx *cli.Context) error {
 
 	log.Infof("No open MR found! continuing..")
 
-	log.Infof("Fetching Project ID of '%s'", a.project)
-	projectID, err := c.getProjectIDByName(a.project)
-	if err != nil {
-		return exit(err, 1)
-	}
-
 	log.Infof("Comparing refs..")
 	cmp, err := c.compareRefs(a)
 	if err != nil {
@@ -70,7 +64,7 @@ func Merge(ctx *cli.Context) error {
 	if len(cmp.Commits) > 0 {
 		log.Infof("Found %d commit(s)", len(cmp.Commits))
 
-		em, notFoundEmails, err := c.getCommiters(&projectID, cmp)
+		em, notFoundEmails, err := c.getCommiters(cmp)
 		if err != nil {
 			return exit(err, 1)
 		}
@@ -135,7 +129,7 @@ func (c *client) findExistingMR(a *mergeArgs) (*gitlab.MergeRequest, error) {
 	return nil, err
 }
 
-func (c *client) getCommiters(projectID *int, cmp *gitlab.Compare) (*EmailMappings, []string, error) {
+func (c *client) getCommiters(cmp *gitlab.Compare) (*EmailMappings, []string, error) {
 	knownMappings, err := c.getEmailMappings()
 	if err != nil {
 		return nil, nil, err
