@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mvisonneau/gitlab-merger/logger"
+	"github.com/mvisonneau/go-helpers/logger"
 	"github.com/nlopes/slack"
 	"github.com/xanzy/go-gitlab"
 
