@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+## [0.1.3] - 2019-04-07
+
 ### Changed
 
 - Fixed a bug in the fetching of slack users function causing wrong assignments of SlackUserIds
@@ -17,6 +19,7 @@ and this project adheres to [0ver](https://0ver.org).
 - Removed some unnecessary calls to the API in the merge function context
 - Enhanced docker build times
 - Switched the slack library from nlopes to slack-go (moved)
+- Added links to MR in titles of slack messages
 
 ## [0.1.2] - 2019-10-23
 
@@ -51,7 +54,8 @@ and this project adheres to [0ver](https://0ver.org).
 - LICENSE
 - README
 
-[Unreleased]: https://github.com/mvisonneau/gitlab-merger/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/mvisonneau/gitlab-merger/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.3
 [0.1.2]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.2
 [0.1.1]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.1
 [0.1.0]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.0
