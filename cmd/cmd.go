@@ -63,8 +63,6 @@ func configure(ctx *cli.Context) error {
 		return err
 	}
 
-	c = &client{}
-
 	if ctx.String("gitlab-admin-token") != "" {
 		c.gitlabAdmin, err = gitlab.NewClient(ctx.GlobalString("gitlab-admin-token"), opts...)
 		if err != nil {
