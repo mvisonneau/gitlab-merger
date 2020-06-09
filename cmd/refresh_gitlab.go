@@ -55,7 +55,11 @@ func (c *client) listGitlabUserEmails(userID int) (emails []*gitlab.Email, err e
 }
 
 func (c *client) listGitlabUsers() (users []*gitlab.User, err error) {
+	// Initialize this variable as we have been experiencing some nil pointer deference
+	// from ListUsers()
 	foundUsers := []*gitlab.User{}
+	_ = foundUsers // this is a workaround for the go vet, ineffassign check
+
 	var resp *gitlab.Response
 
 	opt := &gitlab.ListUsersOptions{
