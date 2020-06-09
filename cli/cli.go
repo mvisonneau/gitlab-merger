@@ -50,7 +50,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 		{
 			Name:   "merge",
 			Usage:  "refs together",
-			Action: cmd.Merge,
+			Action: cmd.ExecWrapper(cmd.Merge),
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:   "mr-prefix",
@@ -91,7 +91,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 			Subcommands: []cli.Command{
 				{
 					Name:   "gitlab-users",
-					Action: cmd.RefreshGitlabUsers,
+					Action: cmd.ExecWrapper(cmd.RefreshGitlabUsers),
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:   "gitlab-admin-token",
@@ -102,7 +102,7 @@ func NewApp(version string, start time.Time) (app *cli.App) {
 				},
 				{
 					Name:   "slack-users",
-					Action: cmd.RefreshSlackUsers,
+					Action: cmd.ExecWrapper(cmd.RefreshSlackUsers),
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:   "slack-token",

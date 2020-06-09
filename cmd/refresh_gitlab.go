@@ -6,26 +6,26 @@ import (
 )
 
 // RefreshGitlabUsers list
-func RefreshGitlabUsers(ctx *cli.Context) error {
+func RefreshGitlabUsers(ctx *cli.Context) (int, error) {
 	if err := configure(ctx); err != nil {
-		return cli.NewExitError(err, 1)
+		return 1, err
 	}
 
 	users, err := c.listGitlabUsers()
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	em, err := c.getEmailMappings()
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	for _, user := range users {
 		em.setGitlabUserID(user.Email, user.ID)
 		userSecondaryEmails, err := c.listGitlabUserEmails(user.ID)
 		if err != nil {
-			return exit(err, 1)
+			return 1, err
 		}
 
 		for _, email := range userSecondaryEmails {
@@ -35,10 +35,10 @@ func RefreshGitlabUsers(ctx *cli.Context) error {
 
 	err = c.saveEmailMappings(em)
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
-	return exit(nil, 0)
+	return 0, nil
 }
 
 func (em *EmailMappings) setGitlabUserID(email string, GitlabUserID int) {

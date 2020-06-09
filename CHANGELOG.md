@@ -7,6 +7,10 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+### Added
+
+- Execution wrapper for CLI commands
+
 ### Changed
 
 - Fixed a bug, duplicating committers in the MR descriptions

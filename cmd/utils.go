@@ -88,12 +88,23 @@ func mandatoryStringOptions(ctx *cli.Context, opts []string) (err error) {
 	return nil
 }
 
-func exit(err error, exitCode int) *cli.ExitError {
-	defer log.Debugf("Executed in %s, exiting..", time.Since(start))
+func exit(exitCode int, err error) *cli.ExitError {
+	defer log.WithFields(
+		log.Fields{
+			"execution-duration": time.Since(start),
+		},
+	).Debug("exiting..")
+
 	if err != nil {
 		log.Error(err.Error())
-		return cli.NewExitError("", exitCode)
 	}
 
-	return cli.NewExitError("", 0)
+	return cli.NewExitError("", exitCode)
+}
+
+// ExecWrapper gracefully logs and exits our `run` functions
+func ExecWrapper(f func(ctx *cli.Context) (int, error)) func(*cli.Context) error {
+	return func(ctx *cli.Context) error {
+		return exit(f(ctx))
+	}
 }

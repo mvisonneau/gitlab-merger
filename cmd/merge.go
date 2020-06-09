@@ -20,9 +20,9 @@ type mergeArgs struct {
 }
 
 // Merge refs
-func Merge(ctx *cli.Context) error {
+func Merge(ctx *cli.Context) (int, error) {
 	if err := configure(ctx); err != nil {
-		return cli.NewExitError(err, 1)
+		return 1, err
 	}
 
 	requiredFlags := []string{
@@ -33,7 +33,7 @@ func Merge(ctx *cli.Context) error {
 	}
 
 	if err := mandatoryStringOptions(ctx, requiredFlags); err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	a := &mergeArgs{
@@ -46,12 +46,12 @@ func Merge(ctx *cli.Context) error {
 	log.Infof("Checking existing merge requests..")
 	mr, err := c.findExistingMR(a)
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	if mr != nil {
 		log.Infof("An opened MR already exists : %s", mr.WebURL)
-		return exit(nil, 0)
+		return 0, err
 	}
 
 	log.Infof("No open MR found! continuing..")
@@ -59,7 +59,7 @@ func Merge(ctx *cli.Context) error {
 	log.Infof("Comparing refs..")
 	cmp, err := c.compareRefs(a)
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	if len(cmp.Commits) > 0 {
@@ -67,7 +67,7 @@ func Merge(ctx *cli.Context) error {
 
 		em, notFoundEmails, err := c.getCommiters(cmp)
 		if err != nil {
-			return exit(err, 1)
+			return 1, err
 		}
 
 		log.Infof("Matched %d commiter(s) in GitLab", len(*em))
@@ -85,7 +85,7 @@ func Merge(ctx *cli.Context) error {
 
 		mr, err := c.createMR(a, em, notFoundEmails)
 		if err != nil {
-			return exit(err, 1)
+			return 1, err
 		}
 
 		log.Infof("MR created : %s", mr.WebURL)
@@ -94,14 +94,14 @@ func Merge(ctx *cli.Context) error {
 		if slackChannel != "" && c.slack != nil {
 			log.Infof("Notifiying slack channel '%s' about the new MR", slackChannel)
 			if err = c.notifySlackChannel(slackChannel, a, mr, em); err != nil {
-				return exit(err, 1)
+				return 1, err
 			}
 		}
 	} else {
 		log.Infof("No commit found in the refs diff, exiting..")
 	}
 
-	return exit(nil, 0)
+	return 1, err
 }
 
 func (c *client) compareRefs(a *mergeArgs) (*gitlab.Compare, error) {

@@ -6,9 +6,9 @@ import (
 )
 
 // RefreshSlackUsers list
-func RefreshSlackUsers(ctx *cli.Context) error {
+func RefreshSlackUsers(ctx *cli.Context) (int, error) {
 	if err := configure(ctx); err != nil {
-		return cli.NewExitError(err, 1)
+		return 1, err
 	}
 
 	requiredFlags := []string{
@@ -16,17 +16,17 @@ func RefreshSlackUsers(ctx *cli.Context) error {
 	}
 
 	if err := mandatoryStringOptions(ctx, requiredFlags); err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	users, err := c.listSlackUsers()
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	em, err := c.getEmailMappings()
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
 	for _, user := range users {
@@ -39,10 +39,10 @@ func RefreshSlackUsers(ctx *cli.Context) error {
 
 	err = c.saveEmailMappings(em)
 	if err != nil {
-		return exit(err, 1)
+		return 1, err
 	}
 
-	return exit(nil, 0)
+	return 0, nil
 }
 
 func (em *EmailMappings) setSlackUserID(email string, SlackUserID string) {
