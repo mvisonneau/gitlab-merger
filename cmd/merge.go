@@ -226,21 +226,21 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 	}
 
 	// List and Delete all the existing approval rules on the MR that may be part of the project config (EE starter/bronze only)
-	approvalRules, _, err := c.gitlab.MergeRequestApprovals.GetApprovalRules(a.project, mr.ID)
+	approvalRules, _, err := c.gitlab.MergeRequestApprovals.GetApprovalRules(a.project, mr.IID)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, rule := range approvalRules {
-		if _, err = c.gitlab.MergeRequestApprovals.DeleteApprovalRule(a.project, mr.ID, rule.ID); err != nil {
+		if _, err = c.gitlab.MergeRequestApprovals.DeleteApprovalRule(a.project, mr.IID, rule.ID); err != nil {
 			return nil, err
 		}
 	}
 
 	// Create a new rule to get the actual committers to approve the MR
 	// For the missing committers, we do not take them in account to avoid getting blocked
-	_, _, err = c.gitlab.MergeRequestApprovals.CreateApprovalRule(a.project, mr.ID, &gitlab.CreateMergeRequestApprovalRuleOptions{
-		Name:              pointy.String("committers"),
+	_, _, err = c.gitlab.MergeRequestApprovals.CreateApprovalRule(a.project, mr.IID, &gitlab.CreateMergeRequestApprovalRuleOptions{
+		Name:              pointy.String("contributors"),
 		ApprovalsRequired: pointy.Int(len(*em)),
 		UserIDs:           committerIDs,
 	})

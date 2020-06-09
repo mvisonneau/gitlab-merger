@@ -20,7 +20,7 @@ func (c *client) findStorageSnippetID() (snippetID int, err error) {
 		return
 	}
 
-	if v, err := strconv.Atoi(user.WebsiteURL); err != nil {
+	if v, err := strconv.Atoi(user.WebsiteURL); err == nil {
 		log.WithFields(log.Fields{
 			"snippet-id": v,
 		}).Debugf("found existing snippet")
