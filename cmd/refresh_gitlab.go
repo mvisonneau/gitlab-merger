@@ -55,7 +55,7 @@ func (c *client) listGitlabUserEmails(userID int) (emails []*gitlab.Email, err e
 }
 
 func (c *client) listGitlabUsers() (users []*gitlab.User, err error) {
-	var foundUsers []*gitlab.User
+	foundUsers := []*gitlab.User{}
 	var resp *gitlab.Response
 
 	opt := &gitlab.ListUsersOptions{
