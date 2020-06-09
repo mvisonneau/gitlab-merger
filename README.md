@@ -41,13 +41,13 @@ INFO[2020-06-09T16:47:57+02:00] notifying slack channel about the new MR      sl
 DEBU[2020-06-09T16:47:57+02:00] exiting..                                     execution-duration=2.45031955s
 ```
 
-Every contributor gets notified in the Slack channel:
-
-![slack-message](docs/images/slack-message.png)
-
-And here is the MR you would get
+Here is the MR you would get
 
 ![gitlab-mr](docs/images/gitlab-mr.png)
+
+And as I specified some Slack configuration, every contributor gets notified over the defined channel as well (this is optional):
+
+![slack-message](docs/images/slack-message.png)
 
 ## Install
 
