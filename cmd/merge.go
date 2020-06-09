@@ -43,43 +43,55 @@ func Merge(ctx *cli.Context) (int, error) {
 		mrPrefix:  ctx.String("mr-prefix"),
 	}
 
-	log.Infof("Checking existing merge requests..")
+	log.Infof("checking existing merge requests..")
 	mr, err := c.findExistingMR(a)
 	if err != nil {
 		return 1, err
 	}
 
 	if mr != nil {
-		log.Infof("An opened MR already exists : %s", mr.WebURL)
+		log.WithFields(log.Fields{
+			"merge-request-iid": mr.IID,
+			"merge-request-url": mr.WebURL,
+		}).Warnf("an opened MR already exists, exiting")
 		return 0, err
 	}
 
-	log.Infof("No open MR found! continuing..")
-
-	log.Infof("Comparing refs..")
+	log.Infof("no open MR found, comparing refs..")
 	cmp, err := c.compareRefs(a)
 	if err != nil {
 		return 1, err
 	}
 
 	if len(cmp.Commits) > 0 {
-		log.Infof("Found %d commit(s)", len(cmp.Commits))
+		log.WithFields(log.Fields{
+			"commit-count": len(cmp.Commits),
+		}).Infof("found differences between refs")
 
 		em, notFoundEmails, err := c.getCommiters(cmp)
 		if err != nil {
 			return 1, err
 		}
 
-		log.Infof("Matched %d commiter(s) in GitLab", len(*em))
+		log.WithFields(log.Fields{
+			"committer-count": len(*em),
+		}).Infof("done matching committers in GitLab")
 
 		for email, mapping := range *em {
-			log.Infof("-> User ID : %d | Email : %s", mapping.GitlabUserID, email)
+			log.WithFields(log.Fields{
+				"gitlab-user-id": mapping.GitlabUserID,
+				"email":          email,
+			}).Infof("found GitLab user")
 		}
 
 		if len(notFoundEmails) > 0 {
-			log.Infof("%d commiter email(s) could not be matched", len(notFoundEmails))
+			log.WithFields(log.Fields{
+				"not-found-committer-count": len(notFoundEmails),
+			}).Infof("some commiters emails were not matched in GitLab")
 			for _, email := range notFoundEmails {
-				log.Infof("--> %s", email)
+				log.WithFields(log.Fields{
+					"email": email,
+				}).Infof("email not found in GitLab users")
 			}
 		}
 
@@ -88,20 +100,25 @@ func Merge(ctx *cli.Context) (int, error) {
 			return 1, err
 		}
 
-		log.Infof("MR created : %s", mr.WebURL)
+		log.WithFields(log.Fields{
+			"merge-request-iid": mr.IID,
+			"merge-request-url": mr.WebURL,
+		}).Infof("merge request created")
 
 		slackChannel := ctx.String("slack-channel")
 		if slackChannel != "" && c.slack != nil {
-			log.Infof("Notifiying slack channel '%s' about the new MR", slackChannel)
+			log.WithFields(log.Fields{
+				"slack-channel": slackChannel,
+			}).Infof("notifying slack channel about the new MR")
 			if err = c.notifySlackChannel(slackChannel, a, mr, em); err != nil {
 				return 1, err
 			}
 		}
 	} else {
-		log.Infof("No commit found in the refs diff, exiting..")
+		log.Infof("no differences found between the refs, exiting")
 	}
 
-	return 1, err
+	return 0, err
 }
 
 func (c *client) compareRefs(a *mergeArgs) (*gitlab.Compare, error) {

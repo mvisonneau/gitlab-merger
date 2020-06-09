@@ -20,14 +20,14 @@ func (c *client) findStorageSnippetID() (snippetID int, err error) {
 		return
 	}
 
-	if v, err := strconv.Atoi(user.WebsiteURL); err == nil {
-		log.Debugf("Found existing snippet - ID: %d", v)
-		snippetID = v
-	} else {
-		log.Debugf("No existing snippet found")
-		snippetID = 0
+	if v, err := strconv.Atoi(user.WebsiteURL); err != nil {
+		log.WithFields(log.Fields{
+			"snippet-id": v,
+		}).Debugf("found existing snippet")
+		return v, nil
 	}
 
+	log.Debugf("no existing snippet found")
 	return
 }
 
@@ -45,12 +45,18 @@ func (c *client) createSnippet(userID int) (err error) {
 	}
 
 	// Create the snippet
-	log.Debugf("Creating new snippet for user %d", userID)
+	log.WithFields(log.Fields{
+		"gitlab-user-id": userID,
+	}).Debugf("creating new snippet")
 	snippet, _, err := c.gitlab.Snippets.CreateSnippet(snippetOpts)
 	if err != nil {
 		return
 	}
-	log.Debugf("New snippet created - ID %d", snippet.ID)
+
+	log.WithFields(log.Fields{
+		"gitlab-user-id": userID,
+		"snippet-id":     snippet.ID,
+	}).Infof("new snippet created")
 
 	// Update the current user
 	snippetID := strconv.Itoa(snippet.ID)
@@ -58,7 +64,11 @@ func (c *client) createSnippet(userID int) (err error) {
 		WebsiteURL: &snippetID,
 	}
 
-	log.Debugf("Updating user website field to store snippet ID %d", snippet.ID)
+	log.WithFields(log.Fields{
+		"gitlab-user-id": userID,
+		"snippet-id":     snippet.ID,
+	}).Debugf("updating user website field to store snippet ID")
+
 	_, _, err = c.gitlabAdmin.Users.ModifyUser(userID, userOpts)
 	return
 }
@@ -71,7 +81,10 @@ func (c *client) getEmailMappings() (*EmailMappings, error) {
 
 	em := &EmailMappings{}
 	if snippetID != 0 {
-		log.Debugf("Loading content from snippet - ID %d", snippetID)
+		log.WithFields(log.Fields{
+			"snippet-id": snippetID,
+		}).Debugf("loading content from snippet")
+
 		data, err := c.getSnippetContent(snippetID)
 		if err != nil {
 			return nil, err
@@ -109,12 +122,15 @@ func (c *client) saveEmailMappings(em *EmailMappings) (err error) {
 }
 
 func (c *client) getSnippetContent(snippetID int) (data []byte, err error) {
-	log.Debugf("Fetching snippet content (ID: %d)", snippetID)
 	data, _, err = c.gitlab.Snippets.SnippetContent(snippetID)
 	return
 }
 
 func (c *client) updateSnippet(snippetID int, em *EmailMappings) (err error) {
+	log.WithFields(log.Fields{
+		"snippet-id": snippetID,
+	}).Debugf("updating snippet content")
+
 	data, err := json.Marshal(*em)
 	if err != nil {
 		return

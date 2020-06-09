@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/slack-go/slack"
 	"github.com/urfave/cli"
 )
@@ -47,11 +48,16 @@ func RefreshSlackUsers(ctx *cli.Context) (int, error) {
 
 func (em *EmailMappings) setSlackUserID(email string, SlackUserID string) {
 	if _, ok := (*em)[email]; ok {
+		log.WithFields(log.Fields{
+			"email":         email,
+			"slack-user-id": SlackUserID,
+		}).Debugf("matched new slack user with email")
 		(*em)[email].SlackUserID = SlackUserID
 	}
 }
 
 func (c *client) listSlackUsers() (users []slack.User, err error) {
+	log.Debugf("listing users from Slack API")
 	users, err = c.slack.GetUsers()
 	return
 }
