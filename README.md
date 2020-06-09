@@ -8,29 +8,46 @@
 
 `gitlab-merger` allows you to generate merge requests that can be used for release review and notification purposes.
 
-## Usage
+## Disclaimer
+
+The current implementation of this project is very opinionated but I am very open to make it more generic. It also only runs on GitLab Enterprise with a license >= starter/bronze.
+
+## TL;DR
 
 ```bash
-~$ gitlab-merger
-NAME:
-   gitlab-merger - Automate your MR creation
+# Trigger it from wherever you want, I personally have a manual CI job at the end of a dev branch which allow me to trigger
+# dev -> master merge requests
 
-USAGE:
-   gitlab-merger [global options] command [command options] [arguments...]
-
-COMMANDS:
-   merge    refs together
-   refresh  users list
-   help, h  Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --log-level level     log level (debug,info,warn,fatal,panic) (default: "info") [$GLM_LOG_LEVEL]
-   --log-format format   log format (json,text) (default: "text") [$GLM_LOG_FORMAT]
-   --gitlab-url url      url [$GLM_GITLAB_URL]
-   --gitlab-token token  token [$GLM_GITLAB_TOKEN]
-   --help, -h            show help
-   --version, -v         print the version
+gitlab-merger \
+  --log-level debug \
+  --gitlab-url https://gitlab.com \
+  --gitlab-token xxxx \
+  merge \
+  --source-ref foo \
+  --target-ref bar \
+  --project 'foo/bar' \
+  --slack-channel '#random' \
+  --slack-token 'xoxp-xxx-xxxx-xxxx-xxxxxxx'
+INFO[2020-06-09T16:47:55+02:00] checking existing merge requests..
+INFO[2020-06-09T16:47:55+02:00] no open MR found, comparing refs..
+INFO[2020-06-09T16:47:56+02:00] found differences between refs                commit-count=1
+DEBU[2020-06-09T16:47:56+02:00] Found current user ID: 1
+DEBU[2020-06-09T16:47:56+02:00] found existing snippet                        snippet-id=1
+DEBU[2020-06-09T16:47:56+02:00] loading content from snippet                  snippet-id=1
+INFO[2020-06-09T16:47:56+02:00] done matching committers in GitLab            committer-count=1
+INFO[2020-06-09T16:47:56+02:00] found GitLab user                             email=maxime@sphere.me gitlab-user-id=1
+INFO[2020-06-09T16:47:57+02:00] merge request created                         merge-request-id=1 merge-request-url="https://gitlab.com/foo/bar/-/merge_requests/1"
+INFO[2020-06-09T16:47:57+02:00] notifying slack channel about the new MR      slack-channel="#test"
+DEBU[2020-06-09T16:47:57+02:00] exiting..                                     execution-duration=2.45031955s
 ```
+
+Every contributor gets notified in the Slack channel:
+
+![slack-message](docs/images/slack-message.png)
+
+And here is the MR you would get
+
+![gitlab-mr](docs/images/gitlab-mr.png)
 
 ## Install
 
@@ -71,17 +88,59 @@ For the following ones, you need to know which version you want to install, to f
 
 ```bash
 # Binary (eg: linux/amd64)
-~$ wget https://github.com/mvisonneau/strongbox/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_amd64.tar.gz
+~$ wget https://github.com/mvisonneau/gitlab-merger/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_amd64.tar.gz
 ~$ tar zxvf gitlab-merger_${GITLAB_MERGER_VERSION}_linux_amd64.tar.gz -C /usr/local/bin
 
 # DEB package (eg: linux/386)
-~$ wget https://github.com/mvisonneau/strongbox/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_386.deb
+~$ wget https://github.com/mvisonneau/gitlab-merger/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_386.deb
 ~$ dpkg -i gitlab-merger_${GITLAB_MERGER_VERSION}_linux_386.deb
 
 # RPM package (eg: linux/arm64)
-~$ wget https://github.com/mvisonneau/strongbox/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_arm64.rpm
+~$ wget https://github.com/mvisonneau/gitlab-merger/releases/download/${GITLAB_MERGER_VERSION}/gitlab-merger_${GITLAB_MERGER_VERSION}_linux_arm64.rpm
 ~$ rpm -ivh gitlab-merger_${GITLAB_MERGER_VERSION}_linux_arm64.rpm
 ```
+
+## Usage
+
+```bash
+~$ gitlab-merger
+NAME:
+   gitlab-merger - Automate your MR creation
+
+USAGE:
+   gitlab-merger [global options] command [command options] [arguments...]
+
+COMMANDS:
+   merge    refs together
+   refresh  users list
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --log-level level     log level (debug,info,warn,fatal,panic) (default: "info") [$GLM_LOG_LEVEL]
+   --log-format format   log format (json,text) (default: "text") [$GLM_LOG_FORMAT]
+   --gitlab-url url      url [$GLM_GITLAB_URL]
+   --gitlab-token token  token [$GLM_GITLAB_TOKEN]
+   --help, -h            show help
+   --version, -v         print the version
+```
+
+### Refresh the GitLab users email mappings
+
+In order to figure out which commit is being made by which GitLab user and get this data in a efficient fashion, we store this value into a snippet. It will be automatically created if it does not exists but you can manually refresh it using the following command
+
+```bash
+gitlab-merger refresh gitlab-users
+```
+
+### Refresh the GitLab users / Slack users mappings
+
+In order to map out which GitLab users with Slack users, you can use the following command:
+
+```bash
+gitlab-merger refresh slack-users
+```
+
+It will store the mapping under the same snippet as the email/gitlab mappings
 
 ## Develop / Test
 
