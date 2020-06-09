@@ -7,6 +7,8 @@ and this project adheres to [0ver](https://0ver.org).
 
 ## [Unreleased]
 
+## [0.1.4] - 2019-06-09
+
 ### Added
 
 - Execution wrapper for CLI commands
@@ -68,7 +70,8 @@ and this project adheres to [0ver](https://0ver.org).
 - LICENSE
 - README
 
-[Unreleased]: https://github.com/mvisonneau/gitlab-merger/compare/0.1.3...HEAD
+[Unreleased]: https://github.com/mvisonneau/gitlab-merger/compare/0.1.4...HEAD
+[0.1.4]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.4
 [0.1.3]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.3
 [0.1.2]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.2
 [0.1.1]: https://github.com/mvisonneau/gitlab-merger/tree/0.1.1
