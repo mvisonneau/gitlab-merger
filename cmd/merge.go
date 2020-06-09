@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/openlyinc/pointy"
 	"github.com/slack-go/slack"
 	"github.com/xanzy/go-gitlab"
 
@@ -181,9 +182,8 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 
 		if !intSliceContains(committerIDs, gitlabUser.ID) {
 			committerIDs = append(committerIDs, gitlabUser.ID)
+			description += fmt.Sprintf("- @%s\n", gitlabUser.Username)
 		}
-
-		description += fmt.Sprintf("- @%s\n", gitlabUser.Username)
 	}
 
 	if len(notFoundEmails) > 0 {
@@ -202,32 +202,31 @@ func (c *client) createMR(a *mergeArgs, em *EmailMappings, notFoundEmails []stri
 		TargetBranch: &a.targetRef,
 	}
 
+	// Create the MR
 	mr, _, err := c.gitlab.MergeRequests.CreateMergeRequest(a.project, mrOpt)
 	if err != nil {
 		return nil, err
 	}
 
-	// Update the amount of approvers (EE only)
-	approvalsCount := len(*em) + len(notFoundEmails)
-	cmraOpt := &gitlab.ChangeMergeRequestApprovalConfigurationOptions{
-		ApprovalsRequired: &approvalsCount,
-	}
-
-	_, _, err = c.gitlab.MergeRequestApprovals.ChangeApprovalConfiguration(a.project, mr.IID, cmraOpt)
+	// List and Delete all the existing approval rules on the MR that may be part of the project config (EE starter/bronze only)
+	approvalRules, _, err := c.gitlab.MergeRequestApprovals.GetApprovalRules(a.project, mr.ID)
 	if err != nil {
-		return mr, err
+		return nil, err
 	}
 
-	// Update the approvers list
-	cmraaOpt := &gitlab.ChangeMergeRequestAllowedApproversOptions{
-		ApproverIDs:      committerIDs,
-		ApproverGroupIDs: []int{},
+	for _, rule := range approvalRules {
+		if _, err = c.gitlab.MergeRequestApprovals.DeleteApprovalRule(a.project, mr.ID, rule.ID); err != nil {
+			return nil, err
+		}
 	}
 
-	_, _, err = c.gitlab.MergeRequestApprovals.ChangeAllowedApprovers(a.project, mr.IID, cmraaOpt)
-	if err != nil {
-		return mr, err
-	}
+	// Create a new rule to get the actual committers to approve the MR
+	// For the missing committers, we do not take them in account to avoid getting blocked
+	_, _, err = c.gitlab.MergeRequestApprovals.CreateApprovalRule(a.project, mr.ID, &gitlab.CreateMergeRequestApprovalRuleOptions{
+		Name:              pointy.String("committers"),
+		ApprovalsRequired: pointy.Int(len(*em)),
+		UserIDs:           committerIDs,
+	})
 
 	return mr, err
 }

@@ -9,6 +9,8 @@ and this project adheres to [0ver](https://0ver.org).
 
 ### Changed
 
+- Fixed a bug, duplicating committers in the MR descriptions
+- Updated the implementation of merge request approvers following GitLab API deprecs (EE only)
 - Added the link to the MR in both the title and the footer
 - Bumped all dependencies
 - Bumped goreleaser to 0.137.0
