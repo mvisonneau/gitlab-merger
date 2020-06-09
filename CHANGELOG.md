@@ -9,6 +9,7 @@ and this project adheres to [0ver](https://0ver.org).
 
 ### Changed
 
+- Added the link to the MR in both the title and the footer
 - Bumped all dependencies
 - Bumped goreleaser to 0.137.0
 

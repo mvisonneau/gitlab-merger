@@ -244,10 +244,9 @@ func (c *client) getMergeRequestCommits(mr *gitlab.MergeRequest) (commits []*git
 
 func (c *client) notifySlackChannel(channel string, a *mergeArgs, mr *gitlab.MergeRequest, em *EmailMappings) (err error) {
 	attachment := slack.Attachment{
-		Title:     fmt.Sprintf("Click for MR"),
-		TitleLink: fmt.Sprintf("%s", mr.WebURL),
-		Pretext:   fmt.Sprintf("🚀 merging `%s` to `%s` in *%s*", a.sourceRef, a.targetRef, a.project),
-		Text:      "",
+		Pretext: fmt.Sprintf("🚀 merging `%s` to `%s` in *%s* - <%s|*!%d*>", a.sourceRef, a.targetRef, a.project, mr.WebURL, mr.IID),
+		Text:    "",
+		Footer:  fmt.Sprintf("%s/diffs", mr.WebURL),
 	}
 
 	commits, err := c.getMergeRequestCommits(mr)
