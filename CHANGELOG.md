@@ -12,6 +12,7 @@ and this project adheres to [0ver](https://0ver.org).
 - Fixed a bug, duplicating committers in the MR descriptions
 - Updated the implementation of merge request approvers following GitLab API deprecs (EE only)
 - Fixed a nil pointer dereference on listGitlabUsers() function
+- Fixed a invalid flag reference for gitlab admin client
 - Added the link to the MR in both the title and the footer
 - Bumped all dependencies
 - Bumped goreleaser to 0.137.0
