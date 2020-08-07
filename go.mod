@@ -9,5 +9,5 @@ require (
 	github.com/slack-go/slack v0.6.5
 	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.22.4
-	github.com/xanzy/go-gitlab v0.32.1
+	github.com/xanzy/go-gitlab v0.34.1
 )
